@@ -131,6 +131,7 @@ Package Declined Status:
     $insiderpreview_counted Insider Preview updates have been declined.
     $previewof_counted Preview of -- updates have been declined.
     $arm64based_counted AMD64-based updates have been declined.
+    $IsSuperseded_counted Superseded updates have been declined.
 
 WSUS server cleanup wizard output:	
 $ServerCleanupOutput
@@ -235,6 +236,18 @@ $arm64based_counted = $arm64based.count
     If ($TrialRun -eq 0 -and $arm64based.count -gt 0)
         {
             $arm64based | %{$_.Decline()}
+        }
+
+# Is Superseded 
+$IsSuperseded = $WsusServerAdminProxy.GetUpdates() | ?{-not $_.IsDeclined -and $_.IsSuperseded}
+$IsSuperseded_counted = $IsSuperseded.count
+    If ($IsSuperseded.count -lt 1)
+        {
+            $IsSuperseded_counted = 0
+        }
+    If ($TrialRun -eq 0 -and $IsSuperseded.count -gt 0)
+        {
+            $IsSuperseded | %{$_.Decline()}
         }
 
 
